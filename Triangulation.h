@@ -7,16 +7,23 @@
 #include "Triangle.h"
 
 class Triangulation {
-    std::unordered_set<std::shared_ptr<Triangle>> triangles;
-    std::vector<std::pair<std::shared_ptr<Triangle>, std::shared_ptr<Triangle>>> bordering_triangles;
+public:
+    std::unordered_set<Triangle, HashTriangle> triangles;
+    std::vector<std::pair<Triangle, Triangle>> bordering_triangles;
 
-    Triangulation(std::unordered_set<std::shared_ptr<Triangle>> triangles_,
-                  std::vector<std::pair<std::shared_ptr<Triangle>, std::shared_ptr<Triangle>>> bordering_triangles_);
-
-    explicit Triangulation(std::unordered_set<std::shared_ptr<Triangle>> triangles_);
+    Triangulation(std::unordered_set<Triangle, HashTriangle> &triangles_,
+                  std::vector<std::pair<Triangle, Triangle>> &bordering_triangles_);
 
     std::vector<Triangulation> GetChildren();
+
+    explicit Triangulation(std::unordered_set<Triangle, HashTriangle> &triangles_);
+
+    bool operator==(const Triangulation& other) const;
 };
 
+class HashTriangulation {
+public:
+    size_t operator()(const Triangulation &triangulation) const;
+};
 
 #endif

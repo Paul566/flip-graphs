@@ -1,3 +1,4 @@
+#include <cmath>
 #include "Point.h"
 
 Point::Point(double x_, double y_) {
@@ -10,12 +11,7 @@ Point::Point() {
     this->y = 0.;
 }
 
-Point::Point(const std::shared_ptr<Point>& point_pointer) {
-    this->x = point_pointer->x;
-    this->y = point_pointer->y;
-}
-
-bool Point::operator==(Point other) const {
+bool Point::operator==(const Point &other) const {
     if (this->x > other.x + this->tolerance)
         return false;
     if (this->x < other.x - this->tolerance)
@@ -26,4 +22,12 @@ bool Point::operator==(Point other) const {
         return false;
 
     return true;
+}
+
+bool Point::operator!=(const Point &other) const {
+    return !(*this == other);
+}
+
+size_t HashPoint::operator()(const Point &point) const {
+    return std::hash<double>{}(std::round(point.x * 1e6)) ^ std::hash<double>{}(std::round(point.y * 1e6));
 }

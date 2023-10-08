@@ -12,10 +12,17 @@ public:
     double x, y;
 
     Point(double x_, double y_);
-    Point();
-    explicit Point(const std::shared_ptr<Point>& point_pointer);
 
-    bool operator==(Point other) const;
+    Point();
+
+    bool operator==(const Point &other) const;
+
+    bool operator!=(const Point &other) const;
+};
+
+class HashPoint {
+public:
+    size_t operator()(const Point &point) const;
 };
 
 

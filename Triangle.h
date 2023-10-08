@@ -9,14 +9,22 @@
 
 class Triangle {
 public:
-    std::vector<std::shared_ptr<Point>> vertices;
+    std::vector<Point> vertices;
 
-    Triangle(std::shared_ptr<Point> v1, std::shared_ptr<Point> v2, std::shared_ptr<Point> v3);
+    Triangle(Point v1, Point v2, Point v3);
 
-    static int NumberCommonVertices(const std::shared_ptr<Triangle>& triangle_a,
-                                    const std::shared_ptr<Triangle>& triangle_b);
+    static int NumberCommonVertices(const Triangle& triangle_a, const Triangle& triangle_b);
 
-    static bool CanBeFlipped(const std::shared_ptr<Triangle>& triangle_a, const std::shared_ptr<Triangle>& triangle_b)
+    static bool CanBeFlipped(Triangle& triangle_a, Triangle& triangle_b);
+
+    bool operator==(const Triangle& other) const;
+
+    bool operator!=(const Triangle& other) const;
+};
+
+class HashTriangle {
+public:
+    size_t operator()(const Triangle& triangle) const;
 };
 
 
