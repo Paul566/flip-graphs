@@ -1,7 +1,7 @@
 #include <cmath>
 #include "Point.h"
 
-Point::Point(double x_, double y_) {
+Point::Point(float x_, float y_) {
     this->x = x_;
     this->y = y_;
 }

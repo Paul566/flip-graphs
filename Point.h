@@ -6,12 +6,12 @@
 
 class Point {
 private:
-    double tolerance = 1e-6;
+    float tolerance = 1e-6;
 
 public:
-    double x, y;
+    float x, y;
 
-    Point(double x_, double y_);
+    Point(float x_, float y_);
 
     Point();
 
