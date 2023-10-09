@@ -9,10 +9,6 @@
 class Triangulation {
 public:
     std::unordered_set<Triangle, HashTriangle> triangles;
-    std::vector<std::pair<Triangle, Triangle>> bordering_triangles;
-
-    Triangulation(std::unordered_set<Triangle, HashTriangle> &triangles_,
-                  std::vector<std::pair<Triangle, Triangle>> &bordering_triangles_);
 
     std::vector<Triangulation> GetChildren();
 

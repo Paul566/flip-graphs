@@ -15,7 +15,7 @@ public:
 
     static int NumberCommonVertices(const Triangle& triangle_a, const Triangle& triangle_b);
 
-    static bool CanBeFlipped(Triangle& triangle_a, Triangle& triangle_b);
+    static bool CanBeFlipped(const Triangle& triangle_a, const Triangle& triangle_b);
 
     bool operator==(const Triangle& other) const;
 

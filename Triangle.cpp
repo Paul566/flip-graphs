@@ -18,7 +18,7 @@ int Triangle::NumberCommonVertices(const Triangle& triangle_a, const Triangle& t
     return num_common_vertices;
 }
 
-bool Triangle::CanBeFlipped(Triangle& triangle_a, Triangle& triangle_b) {
+bool Triangle::CanBeFlipped(const Triangle& triangle_a, const Triangle& triangle_b) {
     if (NumberCommonVertices(triangle_a, triangle_b) != 2)
         return false;
 
