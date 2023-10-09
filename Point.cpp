@@ -27,7 +27,3 @@ bool Point::operator==(const Point &other) const {
 bool Point::operator!=(const Point &other) const {
     return !(*this == other);
 }
-
-size_t HashPoint::operator()(const Point &point) const {
-    return std::hash<double>{}(std::round(point.x * 1e6)) ^ std::hash<double>{}(std::round(point.y * 1e6));
-}

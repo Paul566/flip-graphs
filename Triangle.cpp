@@ -1,3 +1,4 @@
+#include <cmath>
 #include "Triangle.h"
 
 
@@ -67,7 +68,8 @@ bool Triangle::operator!=(const Triangle &other) const {
 }
 
 size_t HashTriangle::operator()(const Triangle& triangle) const {
-    return HashPoint{}(triangle.vertices[0]) ^
-            HashPoint{}(triangle.vertices[1]) ^
-            HashPoint{}(triangle.vertices[2]);
+    return std::hash<double>{}(std::round(
+                triangle.vertices[0].x * triangle.vertices[1].x * triangle.vertices[2].x * 1e6+
+                triangle.vertices[0].y * triangle.vertices[1].y * triangle.vertices[2].y * 1e6
+            ));
 }

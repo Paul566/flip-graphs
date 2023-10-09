@@ -20,10 +20,4 @@ public:
     bool operator!=(const Point &other) const;
 };
 
-class HashPoint {
-public:
-    size_t operator()(const Point &point) const;
-};
-
-
 #endif

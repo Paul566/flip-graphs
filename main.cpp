@@ -48,6 +48,10 @@ std::vector<std::pair<int, int>> FlipGraphEdgeList(Triangulation& initial_triang
                 edge_list.emplace_back(vertex_numbers.size(), vertex_numbers[current_vertex]);
                 vertex_numbers[child] = static_cast<int>(vertex_numbers.size());
                 queue.push_back(child);
+
+                if (vertex_numbers.size() % 1000 == 0) {
+                    std::cout << "visited " << vertex_numbers.size() << " vertices and " << edge_list.size() << "edges" << std::endl;
+                }
             } else {
                 edge_list.emplace_back(vertex_numbers[child], vertex_numbers[current_vertex]);
             }
@@ -106,7 +110,7 @@ std::vector<std::vector<int>> AdjList(const std::vector<std::pair<int, int>>& ed
 Eigen::SparseMatrix<float> NormalizedLaplacian(std::vector<std::vector<int>> adj_list) {
     int max_degree = 0;
     for (const auto &connections: adj_list) {
-        if (max_degree < connections.size()) {
+        if (max_degree < static_cast<int>(connections.size())) {
             max_degree = static_cast<int>(connections.size());
         }
     }
@@ -130,6 +134,7 @@ float SpectralGap(const Eigen::SparseMatrix<float>& L) {
     eigs.compute(100, 1e-7);
 
     auto two_eigenvalues = eigs.eigenvalues();
+    std::cout << "two smallest eigenvalues: " << two_eigenvalues(0) << " " << two_eigenvalues(1) << std::endl;
     float lambda2 = two_eigenvalues(0);
     return lambda2;
 }
@@ -175,7 +180,7 @@ int main() {
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(nullptr);
 
-    std::string directory = "/home/paul/Documents/Experiments/flip-graphs/instances/uniform-13/";
+    std::string directory = "/home/paul/Documents/Experiments/flip-graphs/instances/uniform-16/";
 
     std::cout << "reading the initial triangulation..." << std::endl;
     auto initial_triangulation = ReadInitialTriangulation(directory + "initial-triangulation");
@@ -183,10 +188,10 @@ int main() {
     std::cout << "constructing the flip-graph..." << std::endl;
     auto edge_list = FlipGraphEdgeList(initial_triangulation);
 
-    std::cout << "exporting the edge list..." << std::endl;
-    ExportEdgeList(edge_list, directory + "edge-list");
+     std::cout << "exporting the edge list..." << std::endl;
+     ExportEdgeList(edge_list, directory + "edge-list");
 
-    // auto edge_list = ReadEdgeList(directory + "edge-list");
+    //auto edge_list = ReadEdgeList(directory + "edge-list");
 
     std::cout << "creating the adjacency list..." << std::endl;
     auto adj_list = AdjList(edge_list);
@@ -198,12 +203,12 @@ int main() {
     float gap = SpectralGap(L);
     std::cout << gap << "\n";
 
-    std::cout << "computing the spectrum..." << std::endl;
-    auto spectrum = Spectrum(L);
+    // std::cout << "computing the spectrum..." << std::endl;
+    // auto spectrum = Spectrum(L);
 
     std::cout << "exporting spectral data..." << std::endl;
     ExportGap(gap, static_cast<int>(adj_list.size()), directory + "gap");
-    ExportSpectrum(spectrum, directory + "spectrum");
+    // ExportSpectrum(spectrum, directory + "spectrum");
 
     return 0;
 }
