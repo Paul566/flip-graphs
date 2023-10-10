@@ -48,12 +48,12 @@ bool Triangle::CanBeFlipped(const Triangle& triangle_a, const Triangle& triangle
 
     // check if c and d are on the opposite sides of line ab
     if (((b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y)) *
-            ((b.x - a.x) * (d.y - a.y) - (d.x - a.x) * (b.y - a.y)) > 0)
+            ((b.x - a.x) * (d.y - a.y) - (d.x - a.x) * (b.y - a.y)) >= 0)
         return false;
 
     // check if a and b are on the opposite sides of line cd
     if (((d.x - c.x) * (b.y - c.y) - (b.x - c.x) * (d.y - c.y)) *
-        ((d.x - c.x) * (a.y - c.y) - (a.x - c.x) * (d.y - c.y)) > 0)
+        ((d.x - c.x) * (a.y - c.y) - (a.x - c.x) * (d.y - c.y)) >= 0)
         return false;
 
     return true;
@@ -69,7 +69,7 @@ bool Triangle::operator!=(const Triangle &other) const {
 
 size_t HashTriangle::operator()(const Triangle& triangle) const {
     return std::hash<double>{}(std::round(
-                triangle.vertices[0].x * triangle.vertices[1].x * triangle.vertices[2].x * 1e6+
-                triangle.vertices[0].y * triangle.vertices[1].y * triangle.vertices[2].y * 1e6
+                triangle.vertices[0].x * triangle.vertices[1].x * triangle.vertices[2].x * 1e3+
+                triangle.vertices[0].y * triangle.vertices[1].y * triangle.vertices[2].y * 1e3
             ));
 }

@@ -6,7 +6,7 @@
 
 class Point {
 private:
-    float tolerance = 1e-6;
+    float tolerance = 1e-3;
 
 public:
     float x, y;
