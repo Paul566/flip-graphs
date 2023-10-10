@@ -50,13 +50,16 @@ std::vector<std::pair<int, int>> FlipGraphEdgeList(Triangulation& initial_triang
                 queue.push_back(child);
 
                 if (vertex_numbers.size() % 1000 == 0) {
-                    std::cout << "visited " << vertex_numbers.size() << " vertices and " << edge_list.size() << "edges" << std::endl;
+                    std::cout << "visited " << vertex_numbers.size() << " vertices and " << edge_list.size() << " edges" << std::endl;
                 }
             } else {
                 edge_list.emplace_back(vertex_numbers[child], vertex_numbers[current_vertex]);
             }
         }
     }
+
+    std::cout << "FOUND " << vertex_numbers.size() << " VERTICES AND " << edge_list.size() << " EDGES" << std::endl;
+
     return edge_list;
 }
 
@@ -101,7 +104,14 @@ std::vector<std::vector<int>> AdjList(const std::vector<std::pair<int, int>>& ed
 
     std::vector<std::vector<int>> adj_list(num_vertices);
     for (auto edge: edge_list) {
-        adj_list[edge.first].push_back(edge.second);
+        if (std::find(adj_list[edge.first].begin(), adj_list[edge.first].end(), edge.second) ==
+            adj_list[edge.first].end()) {
+            adj_list[edge.first].push_back(edge.second);
+        }
+        if (std::find(adj_list[edge.second].begin(), adj_list[edge.second].end(), edge.first) ==
+            adj_list[edge.second].end()) {
+            adj_list[edge.second].push_back(edge.first);
+        }
     }
 
     return adj_list;
@@ -117,11 +127,12 @@ Eigen::SparseMatrix<float> NormalizedLaplacian(std::vector<std::vector<int>> adj
 
     int num_vertices = static_cast<int>(adj_list.size());
     Eigen::SparseMatrix<float> L(num_vertices, num_vertices);
-    L.reserve(Eigen::VectorXi::Constant(L.cols(), max_degree));
+    L.reserve(Eigen::VectorXi::Constant(L.cols(), max_degree + 1));
     for (int i = 0; i < num_vertices; i++) {
         L.insert(i, i) = 1;
-        for (int to: adj_list[i])
+        for (int to: adj_list[i]) {
             L.insert(i, to) = static_cast<float>(-1. / std::sqrt(adj_list[i].size() * adj_list[to].size()));
+        }
     }
 
     return L;
@@ -129,11 +140,12 @@ Eigen::SparseMatrix<float> NormalizedLaplacian(std::vector<std::vector<int>> adj
 
 float SpectralGap(const Eigen::SparseMatrix<float>& L) {
     Spectra::SparseSymMatProd<float> op(L);
-    Spectra::SymEigsSolver<float, Spectra::SMALLEST_ALGE, Spectra::SparseSymMatProd<float>> eigs(&op, 2, 5);
+    Spectra::SymEigsSolver<float, Spectra::SMALLEST_ALGE, Spectra::SparseSymMatProd<float>> eigs(&op, 2, 100);
     eigs.init();
     eigs.compute(100, 1e-7);
 
     auto two_eigenvalues = eigs.eigenvalues();
+    std::cout << two_eigenvalues << std::endl;
     std::cout << "two smallest eigenvalues: " << two_eigenvalues(0) << " " << two_eigenvalues(1) << std::endl;
     float lambda2 = two_eigenvalues(0);
     return lambda2;
@@ -180,35 +192,41 @@ int main() {
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(nullptr);
 
-    std::string directory = "/home/paul/Documents/Experiments/flip-graphs/instances/uniform-16/";
+    for (int i = 10; i <= 10; ++i) {
+        std::string directory = "/home/paul/Documents/Experiments/flip-graphs/instances/uniform-" + std::to_string(i) + "/";
 
-    std::cout << "reading the initial triangulation..." << std::endl;
-    auto initial_triangulation = ReadInitialTriangulation(directory + "initial-triangulation");
+        /*
+        std::cout << "reading the initial triangulation..." << std::endl;
+        auto initial_triangulation = ReadInitialTriangulation(directory + "initial-triangulation");
 
-    std::cout << "constructing the flip-graph..." << std::endl;
-    auto edge_list = FlipGraphEdgeList(initial_triangulation);
+        std::cout << "constructing the flip-graph..." << std::endl;
+        auto edge_list = FlipGraphEdgeList(initial_triangulation);
 
-     std::cout << "exporting the edge list..." << std::endl;
-     ExportEdgeList(edge_list, directory + "edge-list");
+        std::cout << "exporting the edge list..." << std::endl;
+        ExportEdgeList(edge_list, directory + "edge-list");
+        */
 
-    //auto edge_list = ReadEdgeList(directory + "edge-list");
+        auto edge_list = ReadEdgeList(directory + "edge-list");
 
-    std::cout << "creating the adjacency list..." << std::endl;
-    auto adj_list = AdjList(edge_list);
+        std::cout << "creating the adjacency list..." << std::endl;
+        auto adj_list = AdjList(edge_list);
 
-    std::cout << "creating the normalized Laplacian..." << std::endl;
-    auto L = NormalizedLaplacian(adj_list);
+        std::cout << "creating the normalized Laplacian..." << std::endl;
+        auto L = NormalizedLaplacian(adj_list);
 
-    std::cout << "computing the spectral gap..." << std::endl;
-    float gap = SpectralGap(L);
-    std::cout << gap << "\n";
+        // std::cout << "computing the spectral gap..." << std::endl;
+        // float gap = SpectralGap(L);
+        // std::cout << gap << "\n";
 
-    // std::cout << "computing the spectrum..." << std::endl;
-    // auto spectrum = Spectrum(L);
+        std::cout << "computing the spectrum..." << std::endl;
+        auto spectrum = Spectrum(L);
 
-    std::cout << "exporting spectral data..." << std::endl;
-    ExportGap(gap, static_cast<int>(adj_list.size()), directory + "gap");
-    // ExportSpectrum(spectrum, directory + "spectrum");
+        std::cout << "exporting spectral data..." << std::endl;
+        // ExportGap(gap, static_cast<int>(adj_list.size()), directory + "gap");
+        ExportSpectrum(spectrum, directory + "spectrum");
+    }
+
+
 
     return 0;
 }
