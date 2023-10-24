@@ -63,6 +63,39 @@ std::vector<std::pair<int, int>> FlipGraphEdgeList(Triangulation& initial_triang
     return edge_list;
 }
 
+void PrintKNeighborhoodsData(Triangulation& initial_triangulation) {
+    std::unordered_map<Triangulation, int, HashTriangulation> vertex_numbers;
+
+    std::unordered_set<Triangulation, HashTriangulation> current_layer;
+    current_layer.insert(initial_triangulation);
+
+    int layer_num = 0;
+    while(!current_layer.empty()) {
+        for (const auto& vertex : current_layer) {
+            vertex_numbers[vertex] = static_cast<int>(vertex_numbers.size());
+        }
+
+        std::cout << "layer: " << layer_num << "\tsize: " << current_layer.size();
+        std::cout << "\ttotal size: " << vertex_numbers.size();
+        layer_num++;
+
+        int edges_to_next_layer = 0;
+        std::unordered_set<Triangulation, HashTriangulation> next_layer;
+        for (auto vertex : current_layer) {
+            auto children = vertex.GetChildren();
+            for (const auto &child: children) {
+                if (vertex_numbers.find(child) == vertex_numbers.end()) {
+                    next_layer.insert(child);
+                    edges_to_next_layer++;
+                }
+            }
+        }
+        current_layer = next_layer;
+
+        std::cout << "\tedges to next layer: " << edges_to_next_layer << std::endl;
+    }
+}
+
 void ExportEdgeList(const std::vector<std::pair<int, int>>& edge_list, const std::string& path) {
     std::ofstream output(path);
 
@@ -192,10 +225,18 @@ int main() {
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(nullptr);
 
-    for (int i = 10; i <= 10; ++i) {
-        std::string directory = "/home/paul/Documents/Experiments/flip-graphs/instances/uniform-" + std::to_string(i) + "/";
+    std::string directory = "/home/paul/Documents/Experiments/flip-graphs/instances/convex-" +
+            std::to_string(13) + "/";
+    auto zigzag_triangulation = ReadInitialTriangulation(directory + "zigzag-triangulation");
 
-        /*
+    PrintKNeighborhoodsData(zigzag_triangulation);
+
+
+    /*
+    for (int i = 14; i <= 15; ++i) {
+        std::string directory = "/home/paul/Documents/Experiments/flip-graphs/instances/rectangular-grid-" + std::to_string(i) + "/";
+
+
         std::cout << "reading the initial triangulation..." << std::endl;
         auto initial_triangulation = ReadInitialTriangulation(directory + "initial-triangulation");
 
@@ -204,7 +245,8 @@ int main() {
 
         std::cout << "exporting the edge list..." << std::endl;
         ExportEdgeList(edge_list, directory + "edge-list");
-        */
+
+
 
         auto edge_list = ReadEdgeList(directory + "edge-list");
 
@@ -214,17 +256,19 @@ int main() {
         std::cout << "creating the normalized Laplacian..." << std::endl;
         auto L = NormalizedLaplacian(adj_list);
 
-        // std::cout << "computing the spectral gap..." << std::endl;
-        // float gap = SpectralGap(L);
-        // std::cout << gap << "\n";
+        std::cout << "computing the spectral gap..." << std::endl;
+        float gap = SpectralGap(L);
+        std::cout << gap << "\n";
 
-        std::cout << "computing the spectrum..." << std::endl;
-        auto spectrum = Spectrum(L);
+        // std::cout << "computing the spectrum..." << std::endl;
+        // auto spectrum = Spectrum(L);
 
         std::cout << "exporting spectral data..." << std::endl;
-        // ExportGap(gap, static_cast<int>(adj_list.size()), directory + "gap");
-        ExportSpectrum(spectrum, directory + "spectrum");
+        ExportGap(gap, static_cast<int>(adj_list.size()), directory + "gap");
+        // ExportSpectrum(spectrum, directory + "spectrum");
+
     }
+    */
 
 
 

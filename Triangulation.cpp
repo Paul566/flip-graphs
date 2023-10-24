@@ -20,21 +20,21 @@ std::vector<Triangulation> Triangulation::GetChildren() {
                     for (const auto& vertex_b : triangle_b_ptr->vertices) {
                         if (vertex_a == vertex_b) {
                             if (not a_taken) {
-                                a = vertex_a;
+                                a = Point(vertex_a.x, vertex_a.y);
                                 a_taken = true;
                             } else {
-                                b = vertex_a;
+                                b = Point(vertex_a.x, vertex_a.y);
                             }
                         }
                     }
                 }
-                for (const auto& vertex_a : triangle_a_ptr->vertices) {
-                    if ((vertex_a != a) && (vertex_a != b))
-                        c = vertex_a;
+                for (auto& vertex_a : triangle_a_ptr->vertices) {
+                    if ((a != vertex_a) && (b != vertex_a))
+                        c = Point(vertex_a.x, vertex_a.y);
                 }
                 for (const auto& vertex_b : triangle_b_ptr->vertices) {
-                    if ((vertex_b != a) && (vertex_b != b))
-                        d = vertex_b;
+                    if ((vertex_b != a) && (b != vertex_b))
+                        d = Point(vertex_b.x, vertex_b.y);
                 }
 
                 Triangle new_triangle_1 = Triangle(a, c, d);
